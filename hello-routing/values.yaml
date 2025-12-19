@@ -1,0 +1,37 @@
+app1:
+  replicaCount: 2
+  image: nginx
+  containerPort: 80
+
+app2:
+  replicaCount: 2
+  image: nginx
+  containerPort: 80
+
+service:
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Optional: force HTTP->HTTPS redirect (can cause 308)
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+  hosts:
+    - host: local-demo.test
+      paths:
+        - path: /app1
+          pathType: Prefix
+          serviceName: hello-app1
+          servicePort: 80
+        - path: /app2
+          pathType: Prefix
+          serviceName: hello-app2
+          servicePort: 80
+
+  tls:
+    - secretName: hello-tls
+      hosts:
+        - local-demo.test
